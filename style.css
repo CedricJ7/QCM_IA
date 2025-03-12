@@ -1,0 +1,372 @@
+/* quiz-style.css */
+/* Styles pour le QCM avancé sur l'IA */
+
+/* Styles de base */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+h1, h2, h3 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2.2em;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+
+/* Conteneurs */
+.quiz-container, .results {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    transition: all 0.3s ease;
+}
+
+.quiz-container:hover {
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Questions */
+.question {
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    border-left: 4px solid #3498db;
+}
+
+.question h3 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+/* Options et réponses */
+.options {
+    margin-top: 15px;
+}
+
+.option {
+    display: block;
+    margin: 10px 0;
+    padding: 12px;
+    background-color: #e8f4f8;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+    white-space: pre-wrap;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.option:hover {
+    background-color: #d0e8f2;
+    transform: translateX(5px);
+    border-left-color: #3498db;
+}
+
+.option.selected {
+    background-color: #3498db;
+    color: white;
+    transform: translateX(5px);
+    border-left-color: #2980b9;
+}
+
+.option.correct {
+    background-color: #27ae60;
+    color: white;
+    border-left-color: #219653;
+}
+
+.option.incorrect {
+    background-color: #e74c3c;
+    color: white;
+    border-left-color: #c0392b;
+}
+
+/* Boutons et contrôles */
+.controls {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s;
+    outline: none;
+}
+
+button:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.restart-btn, .category-select-btn {
+    display: inline-block;
+    margin: 20px 10px;
+    padding: 12px 25px;
+    font-size: 16px;
+}
+
+.restart-btn {
+    background-color: #2ecc71;
+}
+
+.restart-btn:hover {
+    background-color: #27ae60;
+}
+
+.category-select-btn {
+    background-color: #f39c12;
+}
+
+.category-select-btn:hover {
+    background-color: #d35400;
+}
+
+/* Feedback et explications */
+.feedback {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    display: none;
+    font-weight: bold;
+    animation: fadeIn 0.5s;
+}
+
+.explanation {
+    margin-top: 15px;
+    padding: 15px;
+    background-color: #f0f8ff;
+    border-left: 4px solid #3498db;
+    display: none;
+    animation: fadeIn 0.5s;
+    font-size: 0.95em;
+    line-height: 1.7;
+}
+
+/* Barre de progression */
+.progress-container {
+    width: 100%;
+    height: 10px;
+    background-color: #ddd;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(to right, #3498db, #2ecc71);
+    border-radius: 5px;
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
+/* Résultats */
+.results {
+    text-align: center;
+    animation: fadeIn 0.5s;
+}
+
+.results h2 {
+    color: #3498db;
+    margin-bottom: 20px;
+}
+
+#score-display {
+    font-size: 1.4em;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+#score-message {
+    font-size: 1.1em;
+    color: #2c3e50;
+    margin-bottom: 25px;
+}
+
+/* Indicateurs de difficulté */
+.difficulty {
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    margin-left: 10px;
+    display: inline-block;
+    font-weight: normal;
+}
+
+.easy {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.medium {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.hard {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Éléments de code */
+.code {
+    font-family: monospace;
+    background-color: #f8f8f8;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    margin: 10px 0;
+    border: 1px solid #eee;
+}
+
+pre {
+    white-space: pre-wrap;
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+    overflow-x: auto;
+    font-size: 14px;
+    border-left: 3px solid #3498db;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive design */
+@media screen and (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    .quiz-container, .results {
+        padding: 15px;
+    }
+    
+    .controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    button {
+        width: 100%;
+        margin: 5px 0;
+    }
+    
+    .option {
+        font-size: 13px;
+        padding: 10px;
+    }
+}
+
+/* Détail des résultats */
+#results-details {
+    margin-top: 20px;
+    text-align: left;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+}
+
+.question-result {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+/* Styles des résultats détaillés */
+.correct-answer {
+    color: #27ae60;
+}
+
+.incorrect-answer {
+    color: #e74c3c;
+}
+
+details {
+    margin-top: 5px;
+}
+
+summary {
+    cursor: pointer;
+    color: #3498db;
+}
+
+summary:focus {
+    outline: none;
+}
+
+/* Zone de catégories */
+.category-selection {
+    text-align: center;
+    padding: 30px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.category-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.result-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
