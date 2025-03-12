@@ -70,8 +70,7 @@ const questionsCode = [
         correctIndex: 0,
         explanation: "La première option est la bonne implémentation du k‑NN en utilisant scikit-learn, car elle utilise KNeighborsClassifier pour créer et entraîner le modèle de manière simple et efficace.",
         difficulty: "easy"
-      }
-      ,
+      },
 
     // Question 6
     {
