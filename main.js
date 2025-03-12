@@ -8,6 +8,7 @@ let score = 0;
 let selectedOption = null;
 let answeredQuestions = [];
 let currentCategory = '';
+let userAnswers = []; // Tableau pour stocker les réponses de l'utilisateur
 
 // Éléments DOM
 const categorySelection = document.getElementById('category-selection');
@@ -86,6 +87,7 @@ function initQuiz() {
     score = 0;
     selectedOption = null;
     answeredQuestions = new Array(currentQuestions.length).fill(false);
+    userAnswers = new Array(currentQuestions.length).fill(null);
     
     showQuestion(currentQuestionIndex);
     updateProgressBar();
@@ -97,127 +99,176 @@ function initQuiz() {
     nextBtn.disabled = true;
 }
 
+// Ajouter une fonction de journalisation pour faciliter le débogage
+function logDebug(message, data = null) {
+    const debug = false; // Mettre à true pour activer les logs de débogage
+    if (debug) {
+        if (data) {
+            console.log(`[DEBUG] ${message}`, data);
+        } else {
+            console.log(`[DEBUG] ${message}`);
+        }
+    }
+}
+
+// Fonction de gestion globale des erreurs
+window.addEventListener('error', function(event) {
+    console.error('Une erreur s\'est produite :', event.error);
+    
+    // Afficher un message utilisateur en cas d'erreur critique
+    const errorMessage = document.createElement('div');
+    errorMessage.className = 'error-message';
+    errorMessage.innerHTML = `
+        <p>Une erreur s'est produite lors de l'exécution du quiz.</p>
+        <p>Veuillez recharger la page ou essayer à nouveau plus tard.</p>
+    `;
+    
+    // Vérifier si le conteneur de quiz existe avant d'y ajouter le message
+    const quizContainer = document.getElementById('quiz');
+    if (quizContainer) {
+        // Effacer le contenu actuel et afficher le message d'erreur
+        quizContainer.innerHTML = '';
+        quizContainer.appendChild(errorMessage);
+    }
+});
+
 // Afficher une question
 function showQuestion(index) {
-    const question = currentQuestions[index];
-    questionContainer.innerHTML = '';
+    try {
+        logDebug(`Affichage de la question ${index+1}/${currentQuestions.length}`);
+        const question = currentQuestions[index];
+        questionContainer.innerHTML = '';
 
-    const questionDiv = document.createElement('div');
-    questionDiv.className = 'question active';
-    
-    const difficultySpan = document.createElement('span');
-    difficultySpan.className = `difficulty ${question.difficulty}`;
-    difficultySpan.textContent = question.difficulty.charAt(0).toUpperCase() + question.difficulty.slice(1);
-    
-    questionDiv.innerHTML = `<h3>Question ${index + 1}/${currentQuestions.length} <span class="difficulty ${question.difficulty}">${difficultySpan.textContent}</span></h3><p>${question.question}</p>`;
+        const questionDiv = document.createElement('div');
+        questionDiv.className = 'question active';
+        
+        const difficultySpan = document.createElement('span');
+        difficultySpan.className = `difficulty ${question.difficulty}`;
+        difficultySpan.textContent = question.difficulty.charAt(0).toUpperCase() + question.difficulty.slice(1);
+        
+        questionDiv.innerHTML = `<h3>Question ${index + 1}/${currentQuestions.length} <span class="difficulty ${question.difficulty}">${difficultySpan.textContent}</span></h3><p>${question.question}</p>`;
 
-    const optionsDiv = document.createElement('div');
-    optionsDiv.className = 'options';
+        const optionsDiv = document.createElement('div');
+        optionsDiv.className = 'options';
 
-    question.options.forEach((option, optionIndex) => {
-        const optionDiv = document.createElement('div');
-        optionDiv.className = 'option';
-        optionDiv.innerHTML = option;
+        question.options.forEach((option, optionIndex) => {
+            const optionDiv = document.createElement('div');
+            optionDiv.className = 'option';
+            optionDiv.setAttribute('data-index', optionIndex);
+            optionDiv.innerHTML = option;
 
-        // Si cette question a déjà été répondue, afficher le résultat
-        if (answeredQuestions[index]) {
-            if (optionIndex === question.correctIndex) {
-                optionDiv.classList.add('correct');
-            } else if (optionIndex === selectedOption && optionIndex !== question.correctIndex) {
-                optionDiv.classList.add('incorrect');
-            }
-        } else {
-            // Sinon, ajouter les écouteurs d'événements pour la sélection
-            optionDiv.addEventListener('click', () => {
-                // Retirer la classe 'selected' de toutes les options
-                document.querySelectorAll('.option').forEach(opt => {
-                    opt.classList.remove('selected');
+            // Si cette question a déjà été répondue, afficher le résultat
+            if (answeredQuestions[index]) {
+                if (optionIndex === question.correctIndex) {
+                    optionDiv.classList.add('correct');
+                } else if (optionIndex === userAnswers[index] && optionIndex !== question.correctIndex) {
+                    optionDiv.classList.add('incorrect');
+                }
+            } else {
+                // Sinon, ajouter les écouteurs d'événements pour la sélection
+                optionDiv.addEventListener('click', () => {
+                    // Retirer la classe 'selected' de toutes les options
+                    document.querySelectorAll('.option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Ajouter la classe 'selected' à l'option cliquée
+                    optionDiv.classList.add('selected');
+                    selectedOption = optionIndex;
+                    checkBtn.disabled = false;
                 });
-                
-                // Ajouter la classe 'selected' à l'option cliquée
-                optionDiv.classList.add('selected');
-                selectedOption = optionIndex;
-                checkBtn.disabled = false;
-            });
+            }
+
+            optionsDiv.appendChild(optionDiv);
+        });
+
+        questionDiv.appendChild(optionsDiv);
+        questionContainer.appendChild(questionDiv);
+
+        // Mettre à jour les boutons
+        prevBtn.disabled = index === 0;
+        
+        if (answeredQuestions[index]) {
+            checkBtn.disabled = true;
+            nextBtn.disabled = index === currentQuestions.length - 1;
+            explanation.innerHTML = question.explanation;
+            explanation.style.display = 'block';
+        } else {
+            checkBtn.disabled = selectedOption === null;
+            nextBtn.disabled = true;
+            explanation.style.display = 'none';
         }
-
-        optionsDiv.appendChild(optionDiv);
-    });
-
-    questionDiv.appendChild(optionsDiv);
-    questionContainer.appendChild(questionDiv);
-
-    // Mettre à jour les boutons
-    prevBtn.disabled = index === 0;
-    
-    if (answeredQuestions[index]) {
-        checkBtn.disabled = true;
-        nextBtn.disabled = index === currentQuestions.length - 1;
-        explanation.innerHTML = question.explanation;
-        explanation.style.display = 'block';
-    } else {
-        checkBtn.disabled = selectedOption === null;
-        nextBtn.disabled = true;
-        explanation.style.display = 'none';
+        
+        // Masquer le feedback
+        feedback.style.display = 'none';
+    } catch (error) {
+        console.error('Erreur lors de l\'affichage de la question :', error);
     }
-    
-    // Masquer le feedback
-    feedback.style.display = 'none';
 }
 
 // Vérifier la réponse
 function checkAnswer() {
-    if (selectedOption === null) return;
-
-    const question = currentQuestions[currentQuestionIndex];
-    const options = document.querySelectorAll('.option');
-
-    // Marquer cette question comme répondue
-    answeredQuestions[currentQuestionIndex] = true;
-
-    // Afficher les options correctes et incorrectes
-    options.forEach((option, index) => {
-        if (index === question.correctIndex) {
-            option.classList.add('correct');
-        } else if (index === selectedOption && index !== question.correctIndex) {
-            option.classList.add('incorrect');
-        }
-    });
-
-    // Mettre à jour le score
-    if (selectedOption === question.correctIndex) {
-        score++;
-        feedback.innerHTML = '<p>Correct! 👍</p>';
-        feedback.style.backgroundColor = '#d4edda';
-    } else {
-        feedback.innerHTML = '<p>Incorrect! La bonne réponse est la suivante.</p>';
-        feedback.style.backgroundColor = '#f8d7da';
-    }
-
-    // Afficher les explications
-    explanation.innerHTML = question.explanation;
-    explanation.style.display = 'block';
-    feedback.style.display = 'block';
-
-    // Mettre à jour les boutons
-    checkBtn.disabled = true;
-    nextBtn.disabled = currentQuestionIndex === currentQuestions.length - 1;
-
-    // Si c'est la dernière question et qu'elle est répondue, afficher les résultats
-    if (currentQuestionIndex === currentQuestions.length - 1 && answeredQuestions[currentQuestionIndex]) {
-        // Vérifier si toutes les questions ont été répondues
-        nextBtn.disabled = true;
+    try {
+        if (selectedOption === null) return;
         
-        // Ajouter un bouton pour voir les résultats
-        const showResultsBtn = document.createElement('button');
-        showResultsBtn.textContent = "Voir les résultats";
-        showResultsBtn.className = "show-results-btn";
-        showResultsBtn.addEventListener('click', showResults);
-        
-        const controlsDiv = document.querySelector('.controls');
-        if (!document.querySelector('.show-results-btn')) {
-            controlsDiv.appendChild(showResultsBtn);
+        logDebug(`Vérification de la réponse pour la question ${currentQuestionIndex+1}`, {
+            selectedOption,
+            correctIndex: currentQuestions[currentQuestionIndex].correctIndex
+        });
+
+        const question = currentQuestions[currentQuestionIndex];
+        const options = document.querySelectorAll('.option');
+
+        // Marquer cette question comme répondue
+        answeredQuestions[currentQuestionIndex] = true;
+        userAnswers[currentQuestionIndex] = selectedOption; // Enregistrer la réponse de l'utilisateur
+
+        // Afficher les options correctes et incorrectes
+        options.forEach((option, index) => {
+            if (index === question.correctIndex) {
+                option.classList.add('correct');
+            } else if (index === selectedOption && index !== question.correctIndex) {
+                option.classList.add('incorrect');
+            }
+        });
+
+        // Mettre à jour le score
+        if (selectedOption === question.correctIndex) {
+            score++;
+            feedback.innerHTML = '<p>Correct! 👍</p>';
+            feedback.style.backgroundColor = '#d4edda';
+        } else {
+            feedback.innerHTML = '<p>Incorrect! La bonne réponse est la suivante.</p>';
+            feedback.style.backgroundColor = '#f8d7da';
         }
+
+        // Afficher les explications
+        explanation.innerHTML = question.explanation;
+        explanation.style.display = 'block';
+        feedback.style.display = 'block';
+
+        // Mettre à jour les boutons
+        checkBtn.disabled = true;
+        nextBtn.disabled = currentQuestionIndex === currentQuestions.length - 1;
+
+        // Si c'est la dernière question et qu'elle est répondue, afficher les résultats
+        if (currentQuestionIndex === currentQuestions.length - 1 && answeredQuestions[currentQuestionIndex]) {
+            // Vérifier si toutes les questions ont été répondues
+            nextBtn.disabled = true;
+            
+            // Ajouter un bouton pour voir les résultats
+            const showResultsBtn = document.createElement('button');
+            showResultsBtn.textContent = "Voir les résultats";
+            showResultsBtn.className = "show-results-btn";
+            showResultsBtn.addEventListener('click', showResults);
+            
+            const controlsDiv = document.querySelector('.controls');
+            if (!document.querySelector('.show-results-btn')) {
+                controlsDiv.appendChild(showResultsBtn);
+            }
+        }
+    } catch (error) {
+        console.error('Erreur lors de la vérification de la réponse :', error);
     }
 }
 
@@ -225,7 +276,12 @@ function checkAnswer() {
 function nextQuestion() {
     if (currentQuestionIndex < currentQuestions.length - 1) {
         currentQuestionIndex++;
-        selectedOption = null;
+        // Ne réinitialiser selectedOption que si la question n'a pas déjà été répondue
+        if (!answeredQuestions[currentQuestionIndex]) {
+            selectedOption = null;
+        } else {
+            selectedOption = userAnswers[currentQuestionIndex];
+        }
         showQuestion(currentQuestionIndex);
         updateProgressBar();
     }
@@ -235,14 +291,18 @@ function nextQuestion() {
 function prevQuestion() {
     if (currentQuestionIndex > 0) {
         currentQuestionIndex--;
-        selectedOption = null;
+        // Ne réinitialiser selectedOption que si la question n'a pas déjà été répondue
+        if (!answeredQuestions[currentQuestionIndex]) {
+            selectedOption = null;
+        } else {
+            selectedOption = userAnswers[currentQuestionIndex];
+        }
         showQuestion(currentQuestionIndex);
         updateProgressBar();
     }
 }
 
 // Afficher les résultats
-
 function showResults() {
     // Calculer le nombre de questions répondues
     const answeredCount = answeredQuestions.filter(a => a).length;
@@ -317,7 +377,8 @@ function showResults() {
             const questionResult = document.createElement('div');
             questionResult.className = 'question-result';
             
-            const isCorrect = currentQuestions[i].correctIndex === selectedOption;
+            // Vérifier si la réponse de l'utilisateur était correcte
+            const isCorrect = userAnswers[i] === currentQuestions[i].correctIndex;
             const resultClass = isCorrect ? 'correct-answer' : 'incorrect-answer';
             
             questionResult.innerHTML = `
@@ -331,4 +392,36 @@ function showResults() {
             detailsDiv.appendChild(questionResult);
         }
     }
+}
+
+// Fonction pour réinitialiser complètement le quiz (pour le bouton "Choisir une autre catégorie")
+document.getElementById('category-select-btn').addEventListener('click', function() {
+    // Réinitialiser toutes les variables globales
+    currentQuestionIndex = 0;
+    score = 0;
+    selectedOption = null;
+    answeredQuestions = [];
+    userAnswers = [];
+    
+    // Masquer les sections du quiz et des résultats, afficher la sélection de catégorie
+    document.getElementById('quiz-section').style.display = 'none';
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('category-selection').style.display = 'block';
+});
+
+// Gestionnaire pour le bouton "Recommencer cette catégorie"
+document.getElementById('restart-btn').addEventListener('click', function() {
+    // Réinitialiser le quiz avec la même catégorie
+    document.getElementById('results').style.display = 'none';
+    initQuiz();
+    document.getElementById('quiz').style.display = 'block';
+});
+
+// Mettre à jour la barre de progression
+function updateProgressBar() {
+    const progress = document.getElementById('progress');
+    const percentage = ((currentQuestionIndex + 1) / currentQuestions.length) * 100;
+    progress.style.width = percentage + '%';
+    
+    logDebug(`Progression mise à jour : ${percentage.toFixed(1)}%`);
 }

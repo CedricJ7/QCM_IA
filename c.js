@@ -226,7 +226,6 @@ const questionsCode = [
     },
 
     // Question 17
-    Question 17: Visualisation de l'importance des caractéristiques
     {
         question: "Comment visualiser l'importance des caractéristiques d'un modèle d'arbre de décision avec matplotlib ?",
         options: [
