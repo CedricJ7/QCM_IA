@@ -40,7 +40,7 @@ document.querySelectorAll('.category-btn').forEach(button => {
                 break;
             case 'code':
                 currentQuestions = questionsCode;
-                categoryTitle.textContent = "Questions sur le Code";
+                categoryTitle.textContent = "Questions Code Python";
                 break;
             case 'complexes':
                 currentQuestions = questionsComplexes;

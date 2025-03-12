@@ -1,5 +1,5 @@
 // questions-code.js 
-// 30 Questions relatives au code Python pour l'IA
+// 30 Questions code Python pour l'IA
 
 const questionsCode = [
     // Question 1
