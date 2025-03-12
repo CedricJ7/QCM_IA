@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QCM sur l'Intelligence Artificielle</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .quiz-container {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            display: none;
+        }
+        .question.active {
+            display: block;
+        }
+        .options {
+            margin-top: 10px;
+        }
+        .option {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #e8f4f8;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .option:hover {
+            background-color: #d0e8f2;
+        }
+        .option.selected {
+            background-color: #3498db;
+            color: white;
+        }
+        .option.correct {
+            background-color: #2ecc71;
+            color: white;
+        }
+        .option.incorrect {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        .feedback {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background-color: #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #3498db;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        .results {
+            text-align: center;
+            display: none;
+        }
+        .restart-btn {
+            display: block;
+            margin: 20px auto;
+        }
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f0f8ff;
+            border-left: 4px solid #3498db;
+            display: none;
+        }
+        .code {
+            font-family: monospace;
+            background-color: #f8f8f8;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>QCM sur l'Intelligence Artificielle</h1>
+    <div class="progress-container">
+        <div class="progress-bar" id="progress"></div>
+    </div>
+    <div class="quiz-container" id="quiz">
+        <div id="question-container"></div>
+        <div class="feedback" id="feedback"></div>
+        <div class="explanation" id="explanation"></div>
+        <div class="controls">
+            <button id="prev-btn" disabled>Précédent</button>
+            <button id="check-btn">Vérifier</button>
+            <button id="next-btn" disabled>Suivant</button>
+        </div>
+    </div>
+    <div class="results" id="results">
+        <h2>Résultats</h2>
+        <p id="score-display"></p>
+        <p id="score-message"></p>
+        <button class="restart-btn" id="restart-btn">Recommencer le quiz</button>
+    </div>
+
+    <script>
+        // Questions du QCM
+        const questions = [
+            {
+                question: "Dans quelle situation l'utilisation d'un réseau de neurones récurrent (RNN) est-elle plus appropriée qu'un CNN ?",
+                options: [
+                    "Pour l'analyse d'images satellites",
+                    "Pour le traitement de séquences temporelles comme les séries chronologiques ou le texte",
+                    "Pour la classification d'images médicales",
+                    "Pour la segmentation sémantique d'images"
+                ],
+                correctIndex: 1,
+                explanation: "Les RNN sont spécialement conçus pour traiter des données séquentielles où l'ordre temporel est important, comme le texte, les séries temporelles ou l'audio. Ils possèdent des connexions récurrentes qui permettent de maintenir un état interne (mémoire) capturant les dépendances temporelles. Les CNN, en revanche, excellent dans l'extraction de caractéristiques spatiales locales et hiérarchiques dans des données avec une structure en grille, comme les images."
+            },
+            {
+                question: "Quelle est la différence fondamentale entre les opérations de pooling et de convolution dans un CNN ?",
+                options: [
+                    "Le pooling extrait des caractéristiques, tandis que la convolution réduit la dimensionnalité",
+                    "Le pooling applique une fonction non-linéaire, tandis que la convolution est toujours linéaire",
+                    "La convolution extrait des caractéristiques via des filtres apprenables, tandis que le pooling réduit la dimensionnalité sans paramètres apprenables",
+                    "La convolution fonctionne uniquement sur les images en niveaux de gris, tandis que le pooling fonctionne sur les images couleur"
+                ],
+                correctIndex: 2,
+                explanation: "La convolution utilise des filtres avec des poids apprenables pour extraire des caractéristiques spécifiques (comme des contours, textures, etc.) en effectuant une opération de produit scalaire entre le filtre et les régions de l'entrée. Le pooling, en revanche, est une opération de sous-échantillonnage sans paramètres apprenables qui réduit la dimensionnalité spatiale en agrégeant l'information localement (par exemple, en prenant le maximum ou la moyenne d'une région)."
+            },
+            {
+                question: "Dans l'algorithme AdaBoost, comment sont pondérés les échantillons après chaque itération ?",
+                options: [
+                    "Les poids de tous les échantillons sont uniformément diminués",
+                    "Les poids des échantillons correctement classifiés sont augmentés, ceux mal classifiés sont diminués",
+                    "Les poids des échantillons correctement classifiés sont diminués, ceux mal classifiés sont augmentés",
+                    "Les poids restent constants, seuls les poids des classificateurs faibles changent"
+                ],
+                correctIndex: 2,
+                explanation: "Dans AdaBoost, après chaque itération, les poids des échantillons correctement classifiés sont diminués tandis que ceux des échantillons mal classifiés sont augmentés. Cela force les classificateurs faibles suivants à se concentrer davantage sur les exemples difficiles (mal classifiés), améliorant ainsi progressivement la performance de l'ensemble. La formule mathématique utilisée est Dt+1(i) = Dt(i) × exp(-αt × yi × ht(xi)) où αt est le poids du classificateur, yi est l'étiquette réelle et ht(xi) est la prédiction."
+            },
+            {
+                question: "Quelles techniques permettent de résoudre efficacement le problème d'explosion du gradient dans les RNN ?",
+                options: [
+                    "L'augmentation du taux d'apprentissage et l'utilisation d'un plus grand nombre de couches",
+                    "L'utilisation exclusive de fonctions d'activation linéaires",
+                    "L'écrêtage du gradient (gradient clipping) et l'utilisation d'architectures comme LSTM ou GRU",
+                    "Le suréchantillonnage des données d'entraînement et la normalisation par lots"
+                ],
+                correctIndex: 2,
+                explanation: "L'explosion du gradient est particulièrement problématique dans les RNN profonds. Deux principales solutions sont : (1) l'écrêtage du gradient (gradient clipping) qui limite la norme du gradient à un seuil maximum, empêchant ainsi des mises à jour trop importantes, et (2) l'utilisation d'architectures spéciales comme LSTM (Long Short-Term Memory) ou GRU (Gated Recurrent Unit) qui sont conçues avec des mécanismes de portes pour mieux contrôler le flux du gradient à travers le temps."
+            },
+            {
+                question: "Pourquoi RMSE (Root Mean Squared Error) est-elle souvent préférée à MSE comme métrique d'évaluation ?",
+                options: [
+                    "RMSE est toujours plus petite que MSE, donc plus facile à interpréter",
+                    "RMSE est exprimée dans la même unité que la variable cible, ce qui facilite l'interprétation",
+                    "RMSE est moins sensible aux valeurs aberrantes que MSE",
+                    "RMSE converge plus rapidement que MSE lors de l'optimisation"
+                ],
+                correctIndex: 1,
+                explanation: "RMSE est la racine carrée de MSE (RMSE = √MSE). Son principal avantage est qu'elle est exprimée dans la même unité que la variable prédite, ce qui facilite l'interprétation des erreurs. Par exemple, si on prédit des prix en euros, MSE serait en euros², tandis que RMSE serait en euros. Mathématiquement, les deux métriques sont monotoniquement liées, donc minimiser l'une revient à minimiser l'autre."
+            },
+            {
+                question: "Quelle fonction de coût est la plus appropriée pour un problème de classification binaire et pourquoi ?",
+                options: [
+                    "MSE (Mean Squared Error), car elle pénalise plus fortement les erreurs importantes",
+                    "MAE (Mean Absolute Error), car elle est plus robuste aux valeurs aberrantes",
+                    "Entropie croisée binaire (Binary Cross-Entropy), car elle est spécifiquement conçue pour les probabilités et pénalise fortement les prédictions confiantes mais incorrectes",
+                    "L'erreur de Poisson, car elle est adaptée aux distributions binomiales"
+                ],
+                correctIndex: 2,
+                explanation: "L'entropie croisée binaire (BCE) est la fonction de coût la plus adaptée pour la classification binaire car elle mesure la divergence entre deux distributions de probabilité : les étiquettes réelles et les prédictions. Mathématiquement, elle est définie comme BCE = -Σ[y_i * log(p_i) + (1-y_i) * log(1-p_i)]. Sa principale force est qu'elle pénalise très fortement les prédictions confiantes mais incorrectes (ex. prédire 0.01 quand la vraie valeur est 1), ce qui incite le modèle à être prudent dans ses prédictions."
+            },
+            {
+                question: "Comment XGBoost gère-t-il les problèmes de surapprentissage par rapport à un algorithme de boosting standard comme AdaBoost ?",
+                options: [
+                    "XGBoost n'implémente aucune régularisation, il nécessite un élagage manuel des arbres",
+                    "XGBoost utilise uniquement un sous-échantillonnage des données pour éviter le surapprentissage",
+                    "XGBoost intègre une régularisation dans sa fonction objectif en pénalisant la complexité des arbres via le nombre de feuilles et la magnitude des poids",
+                    "XGBoost évite le surapprentissage uniquement en limitant le nombre d'itérations"
+                ],
+                correctIndex: 2,
+                explanation: "XGBoost intègre explicitement la régularisation dans sa fonction objectif, contrairement aux algorithmes de boosting traditionnels. Sa fonction objectif inclut un terme de perte (erreur d'entraînement) et un terme de régularisation Ω(f) qui pénalise la complexité du modèle. Ce terme de régularisation est défini comme Ω(f) = γT + λ∑w² où T est le nombre de feuilles, w représente les poids des feuilles, γ et λ sont des hyperparamètres de régularisation. En plus, XGBoost implémente d'autres techniques comme le sous-échantillonnage des lignes/colonnes et l'arrêt précoce."
+            },
+            {
+                question: "Quelle est la signification géométrique du paramètre C dans les SVM à marges souples (Soft Margin SVM) ?",
+                options: [
+                    "C définit la distance minimale entre l'hyperplan et les vecteurs de support",
+                    "C contrôle le compromis entre la maximisation de la marge et la minimisation de l'erreur de classification",
+                    "C détermine le nombre maximum de vecteurs de support autorisés",
+                    "C spécifie la dimension du noyau utilisé pour la projection"
+                ],
+                correctIndex: 1,
+                explanation: "Dans les SVM à marges souples, le paramètre C contrôle le compromis entre deux objectifs contradictoires : maximiser la marge (qui favorise la généralisation) et minimiser l'erreur de classification sur les données d'entraînement. Mathématiquement, le problème d'optimisation devient : min(w,b) (1/2)||w||² + C∑ξᵢ, où ξᵢ sont les variables d'écart qui permettent des violations de la marge. Un C faible permet plus de violations (marge plus large, plus d'erreurs), tandis qu'un C élevé pénalise davantage les erreurs (marge plus étroite, moins d'erreurs)."
+            },
+            {
+                question: "Quelle différence fondamentale existe entre le Bagging (utilisé dans Random Forest) et le Boosting (utilisé dans AdaBoost, XGBoost) ?",
+                options: [
+                    "Le Bagging construit des modèles séquentiellement, tandis que le Boosting les construit en parallèle",
+                    "Le Bagging utilise uniquement des arbres de décision, tandis que le Boosting peut utiliser n'importe quel type de modèle",
+                    "Le Bagging entraîne chaque modèle sur un sous-ensemble aléatoire des données, tandis que le Boosting entraîne chaque modèle pour corriger les erreurs des modèles précédents",
+                    "Le Bagging nécessite beaucoup plus de modèles que le Boosting pour atteindre des performances similaires"
+                ],
+                correctIndex: 2,
+                explanation: "La différence essentielle est dans la manière dont les modèles de base sont entraînés et combinés. Dans le Bagging (Bootstrap Aggregating), chaque modèle est entraîné indépendamment sur un échantillon bootstrap des données, puis les prédictions sont combinées par vote majoritaire ou moyenne. Dans le Boosting, les modèles sont entraînés séquentiellement, chaque nouveau modèle se concentrant sur les erreurs des modèles précédents. Cette dépendance séquentielle est fondamentale : les poids des échantillons ou les résidus sont ajustés après chaque itération pour que les modèles suivants se focalisent sur les cas difficiles."
+            },
+            {
+                question: "Comment la régularisation Ridge affecte-t-elle un modèle linéaire sujet au problème de multicolinéarité par rapport à une régression linéaire standard ?",
+                options: [
+                    "Ridge n'a aucun effet sur la multicolinéarité, elle réduit uniquement le surapprentissage",
+                    "Ridge élimine complètement les variables redondantes en mettant leurs coefficients à zéro",
+                    "Ridge distribue les coefficients entre les variables corrélées au lieu d'attribuer un coefficient élevé à une seule variable",
+                    "Ridge augmente automatiquement les coefficients des variables les plus informatives"
+                ],
+                correctIndex: 2,
+                explanation: "La multicolinéarité (forte corrélation entre prédicteurs) pose problème dans la régression linéaire standard car elle peut conduire à des coefficients instables et de grande magnitude. La régularisation Ridge ajoute une pénalité L2 (somme des carrés des coefficients) à la fonction objectif, ce qui a pour effet de rétrécir tous les coefficients vers zéro, mais sans jamais les annuler complètement. Pour des variables fortement corrélées, Ridge tend à distribuer le poids entre elles de manière plus équilibrée, au lieu d'attribuer un coefficient très élevé à l'une et très faible à l'autre, comme pourrait le faire la régression linéaire standard."
+            },
+            {
+                question: "Pourquoi l'algorithme de backpropagation utilise-t-il le calcul du gradient par rétropropagation plutôt que par différenciation numérique directe ?",
+                options: [
+                    "La rétropropagation est toujours plus précise mathématiquement que la différenciation numérique",
+                    "La différenciation numérique ne peut pas calculer les dérivées de fonctions d'activation non linéaires",
+                    "La rétropropagation est computationnellement beaucoup plus efficace grâce à la réutilisation des calculs intermédiaires",
+                    "La différenciation numérique nécessite des échantillons supplémentaires que la rétropropagation n'utilise pas"
+                ],
+                correctIndex: 2,
+                explanation: "La différenciation numérique directe (approximation par différences finies) nécessiterait au minimum 2N évaluations du réseau pour calculer les dérivées partielles par rapport à N paramètres. La backpropagation, en revanche, calcule toutes ces dérivées en une seule passe arrière à travers le réseau, grâce à l'application répétée de la règle de chaîne et à la réutilisation des gradients intermédiaires. Cette optimisation algorithmique rend la backpropagation exponentiellement plus efficace en termes de calculs, surtout pour les réseaux avec millions de paramètres."
+            },
+            {
+                question: "Comment compléter ce code pour calculer le biais et la variance dans la décomposition de l'erreur de classification ?",
+                options: [
+                    "```python\n        model.fit(X_train_fold, y_train_fold)\n        # Prédictions sur l'ensemble de validation\n        pred_proba = model.predict_proba(X_val_fold)\n        predictions.append(pred_proba)\n        actual.append(y_val_fold)\n\n    # Convertir en arrays numpy pour faciliter les calculs\n    predictions = np.array(predictions)\n    actual = np.array(actual)\n\n    # Calcul du biais\n    avg_pred = np.mean(predictions, axis=0)\n    bias = np.mean((avg_pred.argmax(axis=1) - actual.flatten()) ** 2)\n\n    # Calcul de la variance\n    variance = np.mean(np.var(predictions, axis=0))\n\n    return bias, variance\n```",
+                    "```python\n        model.fit
+        ];
+
+        // Variables pour suivre l'état du quiz
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedOption = null;
+        let answeredQuestions = new Array(questions.length).fill(false);
+
+        // Éléments DOM
+        const questionContainer = document.getElementById('question-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const checkBtn = document.getElementById('check-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const feedback = document.getElementById('feedback');
+        const explanation = document.getElementById('explanation');
+        const resultsDiv = document.getElementById('results');
+        const scoreDisplay = document.getElementById('score-display');
+        const scoreMessage = document.getElementById('score-message');
+        const restartBtn = document.getElementById('restart-btn');
+        const progress = document.getElementById('progress');
+        const quizContainer = document.getElementById('quiz');
+
+        // Initialisation du quiz
+        function initQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            selectedOption = null;
+            answeredQuestions = new Array(questions.length).fill(false);
+            
+            showQuestion(currentQuestionIndex);
+            updateProgressBar();
+            
+            quizContainer.style.display = 'block';
+            resultsDiv.style.display = 'none';
+            prevBtn.disabled = true;
+            checkBtn.disabled = false;
+            nextBtn.disabled = true;
+        }
+
+        // Afficher une question
+        function showQuestion(index) {
+            const question = questions[index];
+            questionContainer.innerHTML = '';
+
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question active';
+            questionDiv.innerHTML = `<h3>Question ${index + 1}/${questions.length}</h3><p>${question.question}</p>`;
+
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+
+            question.options.forEach((option, optionIndex) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.innerHTML = option;
+
+                // Si cette question a déjà été répondue, afficher le résultat
+                if (answeredQuestions[index]) {
+                    if (optionIndex === question.correctIndex) {
+                        optionDiv.classList.add('correct');
+                    } else if (optionIndex === selectedOption && optionIndex !== question.correctIndex) {
+                        optionDiv.classList.add('incorrect');
+                    }
+                } else {
+                    // Sinon, ajouter les écouteurs d'événements pour la sélection
+                    optionDiv.addEventListener('click', () => {
+                        // Retirer la classe 'selected' de toutes les options
+                        document.querySelectorAll('.option').forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+                        
+                        // Ajouter la classe 'selected' à l'option cliquée
+                        optionDiv.classList.add('selected');
+                        selectedOption = optionIndex;
+                        checkBtn.disabled = false;
+                    });
+                }
+
+                optionsDiv.appendChild(optionDiv);
+            });
+
+            questionDiv.appendChild(optionsDiv);
+            questionContainer.appendChild(questionDiv);
+
+            // Mettre à jour les boutons
+            prevBtn.disabled = index === 0;
+            
+            if (answeredQuestions[index]) {
+                checkBtn.disabled = true;
+                nextBtn.disabled = index === questions.length - 1;
+                explanation.innerHTML = question.explanation;
+                explanation.style.display = 'block';
+            } else {
+                checkBtn.disabled = selectedOption === null;
+                nextBtn.disabled = true;
+                explanation.style.display = 'none';
+            }
+        }
+
+        // Vérifier la réponse
+        function checkAnswer() {
+            if (selectedOption === null) return;
+
+            const question = questions[currentQuestionIndex];
+            const options = document.querySelectorAll('.option');
+
+            // Marquer cette question comme répondue
+            answeredQuestions[currentQuestionIndex] = true;
+
+            // Afficher les options correctes et incorrectes
+            options.forEach((option, index) => {
+                if (index === question.correctIndex) {
+                    option.classList.add('correct');
+                } else if (index === selectedOption && index !== question.correctIndex) {
+                    option.classList.add('incorrect');
+                }
+            });
+
+            // Mettre à jour le score
+            if (selectedOption === question.correctIndex) {
+                score++;
+                feedback.innerHTML = '<p>Correct! 👍</p>';
+                feedback.style.backgroundColor = '#d4edda';
+            } else {
+                feedback.innerHTML = '<p>Incorrect! La bonne réponse est : ' + question.options[question.correctIndex] + '</p>';
+                feedback.style.backgroundColor = '#f8d7da';
+            }
+
+            // Afficher les explications
+            explanation.innerHTML = question.explanation;
+            explanation.style.display = 'block';
+            feedback.style.display = 'block';
+
+            // Mettre à jour les boutons
+            checkBtn.disabled = true;
+            nextBtn.disabled = currentQuestionIndex === questions.length - 1;
+
+            // Si c'est la dernière question et qu'elle est répondue, afficher les résultats
+            if (currentQuestionIndex === questions.length - 1 && answeredQuestions.every(answered => answered)) {
+                showResults();
+            }
+        }
+
+        // Passer à la question suivante
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                selectedOption = null;
+                feedback.style.display = 'none';
+                showQuestion(currentQuestionIndex);
+                updateProgressBar();
+            }
+        }
+
+        // Revenir à la question précédente
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                selectedOption = null;
+                feedback.style.display = 'none';
+                showQuestion(currentQuestionIndex);
+                updateProgressBar();
+            }
+        }
+
+        // Afficher les résultats
+        function showResults() {
+            quizContainer.style.display = 'none';
+            resultsDiv.style.display = 'block';
+            
+            const percentage = Math.round((score / questions.length) * 100);
+            scoreDisplay.innerHTML = `Vous avez obtenu ${score} sur ${questions.length} (${percentage}%)`;
+            
+            if (percentage >= 80) {
+                scoreMessage.innerHTML = "Excellent! Vous maîtrisez bien les concepts d'IA.";
+            } else if (percentage >= 60) {
+                scoreMessage.innerHTML = "Bon travail! Vous avez une bonne compréhension des concepts d'IA.";
+            } else if (percentage >= 40) {
+                scoreMessage.innerHTML = "Pas mal! Mais il y a encore place à l'amélioration.";
+            } else {
+                scoreMessage.innerHTML = "Continuez à étudier les concepts d'IA pour améliorer votre compréhension.";
+            }
+        }
+
+        // Mettre à jour la barre de progression
+        function updateProgressBar() {
+            const percentage = ((currentQuestionIndex + 1) / questions.length) * 100;
+            progress.style.width = `${percentage}%`;
+        }
+
+        // Écouteurs d'événements pour les boutons
+        prevBtn.addEventListener('click', prevQuestion);
+        checkBtn.addEventListener('click', checkAnswer);
+        nextBtn.addEventListener('click', nextQuestion);
+        restartBtn.addEventListener('click', initQuiz);
+
+        // Initialiser le quiz
+        initQuiz();
+    </script>
+</body>
+</html>
