@@ -85,6 +85,126 @@ const questionsComplexes = [
         correctIndex: 1,
         explanation: "La deuxième option est la plus appropriée pour estimer l'intervalle de confiance par bootstrap car elle utilise l'approche out-of-bag (OOB). Quand on échantillonne avec remise pour créer un ensemble bootstrap, environ 63.2% des observations originales sont incluses, laissant ~36.8% des données non utilisées (hors-sac). Ces données OOB fournissent un ensemble de test indépendant, ce qui est crucial pour une estimation non biaisée de la performance du modèle. En répétant ce processus de nombreuses fois, on obtient une distribution d'estimations de performance qui reflète la variabilité due à l'échantillonnage, permettant de calculer des intervalles de confiance robustes sans hypothèses paramétriques.",
         difficulty: "hard"
+    },
+    {
+        question: "Comment l'algorithme de gradient stochastique (SGD) gère-t-il le problème de convergence dans les réseaux de neurones profonds ?",
+        options: [
+            "SGD utilise un taux d'apprentissage constant pour tous les paramètres",
+            "SGD implémente des techniques comme le momentum, RMSprop et Adam pour améliorer la convergence",
+            "SGD ne peut pas résoudre les problèmes de convergence dans les réseaux profonds",
+            "SGD utilise uniquement une descente de gradient par mini-lots sans autre optimisation"
+        ],
+        correctIndex: 1,
+        explanation: "Les variantes modernes de SGD comme Momentum, RMSprop et Adam abordent différents aspects des problèmes de convergence. Momentum aide à accélérer la convergence en accumulant un vecteur de vitesse, RMSprop adapte le taux d'apprentissage pour chaque paramètre en fonction de l'historique des gradients, et Adam combine ces approches en adaptant à la fois le taux d'apprentissage et le momentum.",
+        difficulty: "hard"
+    },
+    {
+        question: "Quelle est la stratégie mathématique pour gérer le problème de la malédiction de la dimensionnalité dans l'apprentissage automatique ?",
+        options: [
+            "Augmenter exponentiellement le nombre de données d'entraînement",
+            "Utiliser des techniques de réduction de dimensionnalité comme ACP (PCA) ou t-SNE",
+            "Ignorer complètement le problème et continuer avec les données de haute dimensionnalité",
+            "Supprimer aléatoirement des caractéristiques jusqu'à obtenir un espace de plus faible dimension"
+        ],
+        correctIndex: 1,
+        explanation: "La malédiction de la dimensionnalité survient lorsque le volume de l'espace augmente si rapidement que les données disponibles deviennent clairsemées. Les techniques de réduction de dimensionnalité comme l'Analyse en Composantes Principales (PCA) ou t-SNE permettent de projeter les données dans un espace de plus faible dimension tout en préservant les informations les plus importantes, réduisant ainsi la complexité computationnelle et améliorant les performances des modèles.",
+        difficulty: "hard"
+    },
+    {
+        question: "Comment l'analyse de la courbe d'apprentissage (learning curve) permet-elle de diagnostiquer les problèmes de biais et de variance ?",
+        options: [
+            "En mesurant uniquement l'erreur de test à différentes tailles d'ensemble d'entraînement",
+            "En traçant simultanément l'erreur d'entraînement et de validation en fonction de la taille de l'ensemble d'entraînement",
+            "En calculant le nombre optimal de caractéristiques à utiliser",
+            "En comparant les performances de différents algorithmes"
+        ],
+        correctIndex: 1,
+        explanation: "La courbe d'apprentissage permet de visualiser l'évolution des erreurs d'entraînement et de validation en fonction de la taille de l'ensemble d'entraînement. Un modèle avec un fort biais montrera une erreur d'entraînement élevée qui ne diminue pas significativement, tandis qu'un modèle avec une forte variance aura un écart important entre les erreurs d'entraînement et de validation, indiquant un surapprentissage.",
+        difficulty: "hard"
+    },
+    {
+        question: "Quelle approche mathématique permet de quantifier l'importance relative des caractéristiques dans un modèle de machine learning ?",
+        options: [
+            "Utiliser uniquement les coefficients bruts du modèle sans normalisation",
+            "Implémenter l'importance par permutation qui mesure la baisse de performance après mélange aléatoire d'une caractéristique",
+            "Compter le nombre de fois qu'une caractéristique est utilisée dans un arbre de décision",
+            "Supprimer manuellement des caractéristiques et observer la variation de performance"
+        ],
+        correctIndex: 1,
+        explanation: "L'importance par permutation est une méthode model-agnostic qui mesure l'impact d'une caractéristique en calculant la baisse de performance du modèle après avoir mélangé aléatoirement ses valeurs. Cette approche capture l'importance prédictive réelle d'une caractéristique indépendamment de l'algorithme utilisé, contrairement aux méthodes spécifiques à un modèle comme l'importance native des arbres de décision.",
+        difficulty: "hard"
+    },
+    {
+        question: "Comment l'algorithme MCMC (Markov Chain Monte Carlo) peut-il être utilisé dans l'inférence bayésienne ?",
+        options: [
+            "MCMC échantillonne directement la distribution a posteriori des paramètres du modèle",
+            "MCMC calcule uniquement la vraisemblance des paramètres",
+            "MCMC est utilisé uniquement pour la classification binaire",
+            "MCMC génère des prédictions déterministes sans échantillonnage"
+        ],
+        correctIndex: 0,
+        explanation: "Dans l'inférence bayésienne, MCMC permet d'échantillonner la distribution a posteriori des paramètres lorsque le calcul direct est impossible. L'algorithme construit une chaîne de Markov dont la distribution stationnaire correspond à la distribution a posteriori, permettant ainsi d'explorer l'espace des paramètres de manière probabiliste et d'obtenir des estimations marginales des paramètres.",
+        difficulty: "hard"
+    },
+    {
+        question: "Comment l'apprentissage par transfert (transfer learning) permet-il de surmonter les limitations des modèles entraînés sur des ensembles de données restreints ?",
+        options: [
+            "En copiant simplement les poids d'un modèle pré-entraîné sans aucune adaptation",
+            "En utilisant des techniques comme le fine-tuning et l'adaptation de domaine pour réutiliser les représentations de haut niveau apprises sur un domaine différent",
+            "En augmentant artificiellement la taille de l'ensemble de données d'entraînement",
+            "En utilisant uniquement des modèles génératifs pour créer des données supplémentaires"
+        ],
+        correctIndex: 1,
+        explanation: "L'apprentissage par transfert permet de réutiliser les représentations de haut niveau apprises par un modèle sur un grand ensemble de données (domaine source) et de les adapter à un nouveau domaine avec des données limitées. Les techniques comme le fine-tuning (ajustement fin des dernières couches) et l'adaptation de domaine permettent de transférer les connaissances générales apprises par le modèle initial, réduisant significativement le besoin en données d'entraînement et améliorant les performances sur des tâches avec peu d'exemples.",
+        difficulty: "hard"
+    },
+    {
+        question: "Quels sont les défis fondamentaux de l'interprétabilité des modèles d'apprentissage profond (deep learning) ?",
+        options: [
+            "L'impossibilité totale de comprendre le processus de décision des réseaux de neurones profonds",
+            "La complexité des représentations internes qui rendent difficile l'extraction de règles explicables, nécessitant des techniques comme les cartes d'activation et l'attribution de gradients",
+            "Le fait que tous les modèles profonds soient intrinsèquement transparents",
+            "L'interprétabilité n'est pas un problème important en apprentissage automatique"
+        ],
+        correctIndex: 1,
+        explanation: "Les modèles de deep learning créent des représentations hiérarchiques et non linéaires qui sont difficiles à interpréter directement. Les techniques comme les cartes d'activation (activation maps), l'attribution de gradients (gradient attribution), et les méthodes comme LIME (Local Interpretable Model-agnostic Explanations) ou SHAP (SHapley Additive exPlanations) tentent de fournir des explications locales ou globales sur la manière dont le modèle prend ses décisions, en visualisant les caractéristiques qui influencent le plus la prédiction.",
+        difficulty: "hard"
+    },
+    {
+        question: "Comment l'apprentissage par renforcement (reinforcement learning) aborde-t-il le problème de l'exploration-exploitation dans les environnements complexes ?",
+        options: [
+            "En explorant toujours de manière aléatoire sans stratégie",
+            "En utilisant des algorithmes comme ε-greedy, UCB (Upper Confidence Bound) ou Thompson Sampling pour équilibrer exploration et exploitation",
+            "En exploitant uniquement la politique qui a donné les meilleurs résultats initiaux",
+            "En ignorant complètement le compromis exploration-exploitation"
+        ],
+        correctIndex: 1,
+        explanation: "Le dilemme exploration-exploitation est central en apprentissage par renforcement. Les agents doivent trouver un équilibre entre l'exploration de nouvelles actions potentiellement meilleures et l'exploitation des actions connues comme performantes. Des algorithmes comme ε-greedy (qui choisit aléatoirement avec une probabilité ε), UCB (qui favorise les actions avec une incertitude élevée), et Thompson Sampling (qui échantillonne les actions selon leur distribution de probabilité postérieure) permettent de gérer ce compromis de manière sophistiquée.",
+        difficulty: "hard"
+    },
+    {
+        question: "Quels sont les défis fondamentaux de la généralisation dans les systèmes d'apprentissage automatique ?",
+        options: [
+            "La généralisation est un problème totalement résolu par les grands modèles de deep learning",
+            "Les modèles peinent à généraliser au-delà de leurs données d'entraînement en raison de biais d'apprentissage, de distributions de données différentes et de la complexité des représentations",
+            "La généralisation n'est pas un problème important en intelligence artificielle",
+            "Seuls les humains peuvent vraiment généraliser"
+        ],
+        correctIndex: 1,
+        explanation: "La généralisation reste un défi fondamental de l'IA. Les modèles d'apprentissage automatique peuvent échouer lorsqu'ils rencontrent des distributions de données différentes de leur ensemble d'entraînement (problème de distribution shift), montrant des biais d'apprentissage et une capacité limitée à comprendre des concepts abstraits. Les techniques comme l'apprentissage par transfert, la régularisation, et les approches multi-tâches visent à améliorer la capacité de généralisation, mais restent encore loin de la flexibilité cognitive humaine.",
+        difficulty: "hard"
+    },
+    {
+        question: "Comment l'apprentissage non supervisé peut-il révéler des structures cachées dans les données ?",
+        options: [
+            "En appliquant simplement une normalisation linéaire aux données",
+            "En utilisant des techniques comme le clustering (K-means), la réduction de dimensionnalité (ACP) et les modèles de mélange qui découvrent des patterns non étiquetés",
+            "En utilisant uniquement des méthodes de classification supervisée",
+            "En générant des données aléatoires"
+        ],
+        correctIndex: 1,
+        explanation: "L'apprentissage non supervisé permet de découvrir des structures intrinsèques dans les données sans utiliser d'étiquettes. Des algorithmes comme K-means permettent de regrouper des données similaires, l'Analyse en Composantes Principales (ACP) réduit la dimensionnalité tout en préservant la variance principale, et les modèles de mélange gaussiens peuvent identifier des sous-populations dans les données. Ces techniques sont cruciales pour la compréhension exploratoire des données, la détection d'anomalies et la préparation de données pour l'apprentissage supervisé.",
+        difficulty: "hard"
     }
 ];
 

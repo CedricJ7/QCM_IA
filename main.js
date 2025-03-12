@@ -242,6 +242,7 @@ function prevQuestion() {
 }
 
 // Afficher les résultats
+
 function showResults() {
     // Calculer le nombre de questions répondues
     const answeredCount = answeredQuestions.filter(a => a).length;
@@ -258,26 +259,65 @@ function showResults() {
     const percentage = Math.round((score / answeredCount) * 100);
     scoreDisplay.innerHTML = `Vous avez obtenu ${score} sur ${answeredCount} (${percentage}%)`;
     
+    let recommendationTitle = '';
+    let recommendation = '';
+    
     if (percentage >= 80) {
         scoreMessage.innerHTML = "Excellent! Vous maîtrisez très bien les concepts avancés d'IA.";
+        recommendationTitle = "Niveau Expert 🏆";
+        recommendation = `
+            <strong>Félicitations!</strong> Votre maîtrise des concepts d'IA est remarquable. 
+            Suggestions pour continuer à progresser :
+            - Approfondissez vos connaissances en explorant des articles de recherche récents
+            - Participez à des compétitions Kaggle ou des projets de recherche
+            - Commencez à travailler sur des projets d'IA avancés et complexes
+        `;
     } else if (percentage >= 60) {
         scoreMessage.innerHTML = "Bon travail! Vous avez une bonne compréhension des concepts avancés d'IA.";
+        recommendationTitle = "Niveau Intermédiaire Avancé 🚀";
+        recommendation = `
+            <strong>Vous êtes sur la bonne voie!</strong> Quelques recommandations pour progresser :
+            - Suivez des cours en ligne avancés sur l'IA (Coursera, edX)
+            - Implementez des algorithmes d'IA à partir de zéro
+            - Lisez des livres techniques sur l'apprentissage automatique et le deep learning
+        `;
     } else if (percentage >= 40) {
         scoreMessage.innerHTML = "Pas mal! Mais il y a encore place à l'amélioration sur les concepts avancés.";
+        recommendationTitle = "Niveau Intermédiaire 📚";
+        recommendation = `
+            <strong>Vous avez des bases solides!</strong> Voici comment approfondir vos connaissances :
+            - Revisez les concepts fondamentaux de l'IA
+            - Suivez des tutoriels pratiques et des cours en ligne
+            - Pratiquez la programmation avec des bibliothèques comme scikit-learn et TensorFlow
+            - Travaillez sur des mini-projets d'IA
+        `;
     } else {
         scoreMessage.innerHTML = "Continuez à étudier les concepts avancés d'IA pour améliorer votre compréhension.";
+        recommendationTitle = "Niveau Débutant 🌱";
+        recommendation = `
+            <strong>Ne vous découragez pas!</strong> Voici un plan pour progresser :
+            - Commencez par des cours d'introduction à l'IA et au machine learning
+            - Suivez des tutoriels pas à pas
+            - Apprenez les bases des langages Python et R
+            - Pratiquez avec des datasets simples et des algorithmes de base
+        `;
     }
     
-    // Afficher le détail des réponses
+    // Ajouter les recommandations
     const detailsDiv = document.getElementById('results-details');
-    detailsDiv.innerHTML = '';
+    detailsDiv.innerHTML = `
+        <h3>${recommendationTitle}</h3>
+        <p>${recommendation}</p>
+        <h4>Détail des réponses :</h4>
+    `;
     
+    // Afficher le détail des réponses
     for (let i = 0; i < currentQuestions.length; i++) {
         if (answeredQuestions[i]) {
             const questionResult = document.createElement('div');
             questionResult.className = 'question-result';
             
-            const isCorrect = currentQuestions[i].correctIndex === currentQuestions[i].userAnswer;
+            const isCorrect = currentQuestions[i].correctIndex === selectedOption;
             const resultClass = isCorrect ? 'correct-answer' : 'incorrect-answer';
             
             questionResult.innerHTML = `
@@ -292,27 +332,3 @@ function showResults() {
         }
     }
 }
-
-// Mettre à jour la barre de progression
-function updateProgressBar() {
-    const percentage = ((currentQuestionIndex + 1) / currentQuestions.length) * 100;
-    progress.style.width = `${percentage}%`;
-}
-
-// Écouteurs d'événements pour les boutons
-prevBtn.addEventListener('click', prevQuestion);
-checkBtn.addEventListener('click', checkAnswer);
-nextBtn.addEventListener('click', nextQuestion);
-restartBtn.addEventListener('click', initQuiz);
-
-// Initialiser les tooltips
-const tooltips = document.querySelectorAll('.tooltip');
-tooltips.forEach(tooltip => {
-    tooltip.addEventListener('mouseover', function() {
-        this.querySelector('.tooltip-text').style.visibility = 'visible';
-    });
-    
-    tooltip.addEventListener('mouseout', function() {
-        this.querySelector('.tooltip-text').style.visibility = 'hidden';
-    });
-});
