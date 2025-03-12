@@ -65,6 +65,11 @@ document.querySelectorAll('.category-btn').forEach(button => {
     });
 });
 
+// Attacher les événements aux boutons principaux
+checkBtn.addEventListener('click', checkAnswer);
+nextBtn.addEventListener('click', nextQuestion);
+prevBtn.addEventListener('click', prevQuestion);
+
 // Fonction pour mélanger un tableau (algorithme de Fisher-Yates)
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
