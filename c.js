@@ -62,15 +62,16 @@ const questionsCode = [
     {
         question: "Comment implémenter un modèle k-NN pour la classification en utilisant scikit-learn ?",
         options: [
-            "from sklearn.neighbors import KNeighborsClassifier\n\ndef train_knn(X_train, y_train, k=5):\n    # Créer et entraîner le modèle\n    knn = KNeighborsClassifier(n_neighbors=k)\n    knn.fit(X_train, y_train)\n    return knn",
-            "from sklearn.ensemble import KNNClassifier\n\ndef train_knn(X_train, y_train, k=5):\n    # Créer et entraîner le modèle\n    knn = KNNClassifier(neighbors=k)\n    knn.train(X_train, y_train)\n    return knn",
-            "import numpy as np\n\ndef knn_predict(X_train, y_train, X_test, k=5):\n    predictions = []\n    for x in X_test:\n        # Calculer les distances euclidiennes\n        distances = np.sqrt(np.sum((X_train - x)**2, axis=1))\n        # Trouver les k plus proches voisins\n        nearest_indices = np.argsort(distances)[:k]\n        nearest_labels = y_train[nearest_indices]\n        # Prédire la classe majoritaire\n        prediction = np.bincount(nearest_labels).argmax()\n        predictions.append(prediction)\n    return np.array(predictions)",
-            "from sklearn import neighbors\n\ndef train_knn(X_train, y_train, k=5):\n    # Créer et entraîner le modèle\n    knn = neighbors.KNN(k_neighbors=k)\n    knn.fit(X_train, y_train)\n    return knn"
+          "from sklearn.neighbors import KNeighborsClassifier\n\ndef train_knn(X_train, y_train, k=5):\n    knn = KNeighborsClassifier(n_neighbors=k)\n    knn.fit(X_train, y_train)\n    return knn",
+          "from sklearn.ensemble import KNNClassifier\n\ndef train_knn(X_train, y_train, k=5):\n    knn = KNNClassifier(neighbors=k)\n    knn.train(X_train, y_train)\n    return knn",
+          "import numpy as np\n\ndef knn_predict(X_train, y_train, X_test, k=5):\n    # Code incomplet ou erroné",
+          "from sklearn.metrics import pairwise_distances\n\ndef knn_classifier(X_train, y_train, X_test, k=5):\n    distances = pairwise_distances(X_test, X_train)\n    nearest = np.argsort(distances, axis=1)[:, :k]\n    predictions = [np.argmax(np.bincount(y_train[neighbors])) for neighbors in nearest]\n    return predictions"
         ],
         correctIndex: 0,
-        explanation: "La première option est la façon correcte d'implémenter un classificateur k-NN avec scikit-learn. La classe KNeighborsClassifier du module sklearn.neighbors implémente l'algorithme des k plus proches voisins pour la classification. Le paramètre principal est n_neighbors qui définit le nombre k de voisins à considérer. La méthode fit() est utilisée pour 'entraîner' le modèle, bien que l'algorithme k-NN ne fasse que mémoriser les données d'entraînement. Les autres options contiennent des erreurs : la deuxième utilise un nom de classe inexistant (KNNClassifier), la troisième est une implémentation manuelle de k-NN qui pourrait fonctionner mais n'utilise pas scikit-learn comme demandé, et la quatrième utilise également un nom de classe inexistant (KNN au lieu de KNeighborsClassifier).",
+        explanation: "La première option est la bonne implémentation du k‑NN en utilisant scikit-learn, car elle utilise KNeighborsClassifier pour créer et entraîner le modèle de manière simple et efficace.",
         difficulty: "easy"
-    },
+      }
+      ,
 
     // Question 6
     {
